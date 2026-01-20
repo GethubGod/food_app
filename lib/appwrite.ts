@@ -1,5 +1,15 @@
 import {Account, Avatars, Client, Databases, ID, Query, Storage} from "react-native-appwrite";
-import type {CreateMenuItemParams, CreateOrderParams, CreateUserParams, GetMenuParams, SignInParams, OrderDoc, User} from "@/type";
+import type {
+    Category,
+    CreateMenuItemParams,
+    CreateOrderParams,
+    CreateUserParams,
+    GetMenuParams,
+    MenuItem,
+    OrderDoc,
+    SignInParams,
+    User,
+} from "@/type";
 export const appwriteConfig = {
     endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
     projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
@@ -54,7 +64,7 @@ export const createUser = async ({ email, password, name }: CreateUserParams) =>
             appwriteConfig.databaseId,
             appwriteConfig.userCollectionId,
             ID.unique(),
-            {email, name, accountId: newAccount.$id, avatar: avatarUrl}
+            {email, name, accountId: newAccount.$id, avatar: avatarUrl.toString()}
         );
 
 
@@ -98,7 +108,7 @@ export const getMenu = async ({category, query } : GetMenuParams) => {
         if(category) queries.push(Query.equal('categories', category));
         if(query) queries.push(Query.search('name', query));
 
-        const menus = await databases.listDocuments(
+        const menus = await databases.listDocuments<MenuItem>(
             appwriteConfig.databaseId,
             appwriteConfig.menuCollectionId,
             queries,
@@ -109,9 +119,9 @@ export const getMenu = async ({category, query } : GetMenuParams) => {
     }
 }
 
-export const getCategories = async () => {
+export const getCategories = async (): Promise<Category[]> => {
     try{
-        const categories = await databases.listDocuments(
+        const categories = await databases.listDocuments<Category>(
             appwriteConfig.databaseId,
             appwriteConfig.categoriesCollectionId,
         )
@@ -218,13 +228,13 @@ export const getOrdersByUser = async ({
     userId: string;
 }): Promise<OrderDoc[]> => {
     try {
-        const orders = await databases.listDocuments(
+        const orders = await databases.listDocuments<OrderDoc>(
             appwriteConfig.databaseId,
             appwriteConfig.ordersCollectionId,
             [Query.equal("user_id", userId), Query.orderDesc("$createdAt")]
         );
 
-        return orders.documents as OrderDoc[];
+        return orders.documents;
     } catch (e) {
         throw new Error(e as string);
     }

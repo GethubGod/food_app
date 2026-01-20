@@ -6,9 +6,20 @@ import { router } from 'expo-router';
 import { images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomButton from '@/components/CustomButton';
+import seed from "@/lib/seed";
+
 
 const Profile = () => {
     const {user, setIsAuthenticated, setUser} = useAuthStore();
+
+    const handleSeed = async () => {
+        try {
+          await seed();
+          Alert.alert("Seed complete", "Your Appwrite data was refreshed.");
+        } catch (e: any) {
+          Alert.alert("Seed failed", e.message ?? "Check console for details.");
+        }
+      };
 
     const handleSignOut = async () => {
         try {
@@ -42,6 +53,7 @@ const Profile = () => {
                 </View>
 
                 <TouchableOpacity
+                    
                     className="profile-field"
                     onPress={() => router.push("/orders")}
                 >
@@ -60,7 +72,11 @@ const Profile = () => {
                     </View>
                     <Text className="base-regular text-dark-100">Add / Edit Items</Text>
                 </TouchableOpacity>
-
+                {__DEV__ && (
+                <View className="mb-4">
+                    <CustomButton title="Seed data" onPress={handleSeed} />
+                </View>
+                )}
                 <View className="mt-10">
                     <CustomButton title="Sign Out" onPress={handleSignOut} />
                 </View>
