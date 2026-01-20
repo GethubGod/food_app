@@ -1,5 +1,5 @@
 import {Account, Avatars, Client, Databases, ID, Query, Storage} from "react-native-appwrite";
-import {CreateUserParams, GetMenuParams, SignInParams} from "@/type";
+import type {CreateMenuItemParams, CreateOrderParams, CreateUserParams, GetMenuParams, SignInParams, OrderDoc, User} from "@/type";
 export const appwriteConfig = {
     endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
     projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
@@ -11,6 +11,8 @@ export const appwriteConfig = {
     menuCollectionId: 'menu',
     customizationsCollectionId: 'customizations',
     menuCustomizationsCollectionId: 'menu_customizations',
+    ordersCollectionId: "orders",
+    orderItemsCollectionId: "order_items",
 }
 
 export const client = new Client();
@@ -24,6 +26,20 @@ export const account = new Account(client);
 export const databases = new Databases(client);
 export const storage = new Storage(client);
 const avatars = new Avatars(client);
+const maxImageUrlLength = 100;
+
+const normalizeOrderItemImageUrl = (imageUrl: string) => {
+    if (!imageUrl) return "";
+    if (imageUrl.length <= maxImageUrlLength) return imageUrl;
+
+    const fileIdMatch = imageUrl.match(/\/files\/([^/]+)\//);
+    if (fileIdMatch?.[1]) return fileIdMatch[1];
+
+    const withoutQuery = imageUrl.split("?")[0];
+    if (withoutQuery.length <= maxImageUrlLength) return withoutQuery;
+
+    return imageUrl.slice(0, maxImageUrlLength);
+};
 
 export const createUser = async ({ email, password, name }: CreateUserParams) => {
     try {
@@ -34,7 +50,7 @@ export const createUser = async ({ email, password, name }: CreateUserParams) =>
 
         const avatarUrl = avatars.getInitialsURL(name);
 
-        return await databases.createDocument(
+        return await databases.createDocument<User>(
             appwriteConfig.databaseId,
             appwriteConfig.userCollectionId,
             ID.unique(),
@@ -49,25 +65,26 @@ export const createUser = async ({ email, password, name }: CreateUserParams) =>
 }
 export const signIn = async ({email, password}: SignInParams) => {
     try {
-        const session = await account.createEmailPasswordSession(email, password);
+        await account.createEmailPasswordSession(email, password);
     } catch (e) {
         throw new Error(e as string);
     }
 }
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = async (): Promise<User> => {
     try{
         const currentAccount = await account.get();
         if(!currentAccount) throw Error;
 
-        const currentUser = await databases.listDocuments(
+        const currentUser = await databases.listDocuments<User>(
             appwriteConfig.databaseId,
             appwriteConfig.userCollectionId,
             [Query.equal('accountId', currentAccount.$id)]
         )
 
-        if(!currentUser) throw Error;
-        return currentUser.documents[0];
+        const userDoc = currentUser.documents[0];
+        if(!userDoc) throw new Error("User profile not found.");
+        return userDoc;
     } catch(e) {
         console.log(e);
         throw new Error(e as string);
@@ -104,3 +121,111 @@ export const getCategories = async () => {
         throw new Error(e as string);
     }
 }
+
+export const signOut = async () => {
+    try {
+        await account.deleteSession('current');
+    }catch (e) {
+        throw new Error(e as string);
+    }
+};
+
+export const createMenuItem = async ({
+    name,
+    description,
+    image_url,
+    price,
+    rating,
+    calories,
+    protein,
+    categoryId,
+}: CreateMenuItemParams) => {
+    try {
+        return await databases.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.menuCollectionId,
+            ID.unique(),
+            {
+                name,
+                description,
+                image_url,
+                price,
+                rating,
+                calories,
+                protein,
+                categories: categoryId,
+            }
+        );
+    } catch (e) {
+        throw new Error(e as string);
+    }
+};
+
+export const createOrder = async ({ userId, items, total }: CreateOrderParams) => {
+    try {
+        const order = await databases.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.ordersCollectionId,
+            ID.unique(),
+            {
+                user_id: userId,
+                status: "SUBMITTED",
+                total,
+            }
+        );
+
+        await Promise.all(
+            items.map((item) =>
+                databases.createDocument(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.orderItemsCollectionId,
+                    ID.unique(),
+                    {
+                        order_id: order.$id,
+                        menu_id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        image_url: normalizeOrderItemImageUrl(item.image_url),
+                    }
+                )
+            )
+        );
+
+        return order;
+    } catch (e) {
+        throw new Error(e as string);
+    }
+};
+
+export const getOrderItems = async ({ orderId }: { orderId: string }) => {
+    try {
+        const items = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.orderItemsCollectionId,
+            [Query.equal("order_id", orderId)]
+        );
+
+        return items.documents;
+    } catch (e) {
+        throw new Error(e as string);
+    }
+};
+
+export const getOrdersByUser = async ({
+    userId,
+}: {
+    userId: string;
+}): Promise<OrderDoc[]> => {
+    try {
+        const orders = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.ordersCollectionId,
+            [Query.equal("user_id", userId), Query.orderDesc("$createdAt")]
+        );
+
+        return orders.documents as OrderDoc[];
+    } catch (e) {
+        throw new Error(e as string);
+    }
+};

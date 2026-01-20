@@ -1,5 +1,5 @@
-import {View, Text, FlatList} from 'react-native'
-import React from 'react'
+import {View, Text, FlatList, Alert} from 'react-native';
+import React, {useState} from 'react';
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useCartStore} from "@/store/cart.store";
 import CustomHeader from "@/components/CustomHeader";
@@ -7,6 +7,8 @@ import {PaymentInfoStripeProps} from "@/type";
 import cn from "clsx";
 import CustomButton from "@/components/CustomButton";
 import CartItem from "@/components/cartItem";
+import useAuthStore from "@/store/auth.store";
+import { createOrder } from "@/lib/appwrite";
 
 const PaymentInfoStripe = ({ label,  value,  labelStyle,  valueStyle, }: PaymentInfoStripeProps) => (
     <View className="flex-between flex-row my-1">
@@ -21,10 +23,44 @@ const PaymentInfoStripe = ({ label,  value,  labelStyle,  valueStyle, }: Payment
 
 
 const Cart = () => {
-    const { items, getTotalItems, getTotalPrice } = useCartStore();
+    const { items, getTotalItems, getTotalPrice, clearCart } = useCartStore();
+    const { user } = useAuthStore();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const totalItems = getTotalItems();
     const totalPrice = getTotalPrice();
+
+    const handleOrderNow = async () => {
+        if (!user) {
+            return Alert.alert("Error", "You must be signed in.");
+        }
+
+        if (items.length === 0) {
+            return Alert.alert("Cart empty", "Add items before ordering.");
+        }
+
+        setIsSubmitting(true);
+        try {
+            await createOrder({
+                userId: user.$id,
+                items: items.map((item) => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    image_url: item.image_url,
+                    quantity: item.quantity,
+                })),
+                total: totalPrice,
+            });
+
+            clearCart();
+            Alert.alert("Order placed", "Your order has been submitted.");
+        } catch (e: any) {
+            Alert.alert("Error", e.message ?? "Order failed.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <SafeAreaView className="bg-white h-full">
@@ -64,11 +100,16 @@ const Cart = () => {
                             />
                         </View>
 
-                        <CustomButton title="Order Now"/>
+                        <CustomButton 
+                            title="Order Now"
+                            isLoading={isSubmitting}
+                            onPress={handleOrderNow}
+                        
+                        />
                     </View>
                 )}
             />
         </SafeAreaView>
     )
-}
-export default Cart
+};
+export default Cart;

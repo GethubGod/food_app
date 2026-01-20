@@ -4,17 +4,20 @@ import {CustomInputProps} from "@/type";
 import cn from "clsx";
 
 const CustomInput = ({
-                         placeholder = 'Enter text',
-                         value,
-                         onChangeText,
-                         label,
-                         secureTextEntry = false,
-                         keyboardType="default"
-} :CustomInputProps) => {
+    placeholder = "Enter text",
+    value,
+    onChangeText,
+    label,
+    secureTextEntry = false,
+    keyboardType = "default",
+    containerClassName,
+    labelClassName,
+    inputClassName,
+}: CustomInputProps) => {
     const [isFocused, setIsFocused] = useState(false)
     return (
-        <View className="w-full">
-            <Text className="label">{label}</Text>
+        <View className={cn("w-full", containerClassName)}>
+            <Text className={cn("label", labelClassName)}>{label}</Text>
             <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -26,7 +29,11 @@ const CustomInput = ({
                 onBlur={() => setIsFocused(false)}
                 placeholder={placeholder}
                 placeholderTextColor="#888"
-                className={cn('input', isFocused ? 'border-primary' : 'border-gray-300')}
+                className={cn(
+                    "input",
+                    isFocused ? "border-primary" : "border-gray-300",
+                    inputClassName
+                )}
             />
         </View>
     )

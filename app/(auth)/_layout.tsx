@@ -1,10 +1,6 @@
-import {View, Text, KeyboardAvoidingView, Platform, ScrollView, Dimensions, ImageBackground, Image} from 'react-native'
-import React from 'react'
-import {Redirect, Slot} from "expo-router";
-import {SafeAreaView} from "react-native-safe-area-context";
-import {images} from "@/constants";
-import CustomInput from "@/components/CustomInput";
-import CustomButton from "@/components/CustomButton";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import React from "react";
+import { Redirect, Slot } from "expo-router";
 import useAuthStore from "@/store/auth.store";
 
 export default function AuthLayout() {
@@ -13,15 +9,23 @@ export default function AuthLayout() {
     if(isAuthenticated) return <Redirect href="/" />
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <ScrollView className="bg-white h-full" keyboardShouldPersistTaps="handled">
-                <View className="w-full relative" style={{ height: Dimensions.get('screen').height / 2.25}}>
-                    <ImageBackground source={images.loginGraphic} className="size-full rounded-b-lg" resizeMode="stretch"/>
-                    <Image source={images.logo} className="self-center size-48 absolute -bottom-16 z-10"/>
-                </View>
-
-                <Slot />
-            </ScrollView>
-        </KeyboardAvoidingView>
+        <View className="flex-1 bg-white">
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <ScrollView
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ flexGrow: 1 }}
+                >
+                    <View className="flex-1 px-6 pb-10">
+                        <View className="flex-1 justify-center">
+                            <Slot />
+                        </View>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </View>
     )
 }

@@ -29,11 +29,11 @@ const useAuthStore = create<AuthState>((set) => ({
         try{
             const user = await getCurrentUser();
 
-            if(user) set({ isAuthenticated: true, user: user as unknown as User })
+            if(user) set({ isAuthenticated: true, user })
             else set({ isAuthenticated: false, user: null });
         }catch(e){
             console.log('fetchAuthenticatedUser error:', e);
-            set({isLoading: false, user:null});
+            set({isLoading: false, user:null, isAuthenticated: false});
         } finally {
             set({isLoading: false});
         }

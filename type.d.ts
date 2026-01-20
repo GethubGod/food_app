@@ -49,20 +49,20 @@ export interface CartStore {
     getTotalPrice: () => number;
 }
 
-interface TabBarIconProps {
+export interface TabBarIconProps {
     focused: boolean;
     icon: ImageSourcePropType;
     title: string;
 }
 
-interface PaymentInfoStripeProps {
+export interface PaymentInfoStripeProps {
     label: string;
     value: string;
     labelStyle?: string;
     valueStyle?: string;
 }
 
-interface CustomButtonProps {
+export interface CustomButtonProps {
     onPress?: () => void;
     title?: string;
     style?: string;
@@ -71,37 +71,78 @@ interface CustomButtonProps {
     isLoading?: boolean;
 }
 
-interface CustomHeaderProps {
+export interface CustomHeaderProps {
     title?: string;
 }
 
-interface CustomInputProps {
+export interface CustomInputProps {
     placeholder?: string;
     value?: string;
     onChangeText?: (text: string) => void;
     label: string;
     secureTextEntry?: boolean;
     keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
+    containerClassName?: string;
+    labelClassName?: string;
+    inputClassName?: string;
 }
 
-interface ProfileFieldProps {
+export interface ProfileFieldProps {
     label: string;
     value: string;
     icon: ImageSourcePropType;
 }
 
-interface CreateUserParams {
+export interface CreateUserParams {
     email: string;
     password: string;
     name: string;
 }
 
-interface SignInParams {
+export interface SignInParams {
     email: string;
     password: string;
 }
 
-interface GetMenuParams {
+export interface GetMenuParams {
     category: string;
     query: string;
+}
+
+export interface CreateMenuItemParams {
+    name: string;
+    description: string;
+    image_url: string;
+    price: number;
+    rating: number;
+    calories: number;
+    protein: number;
+    categoryId: string;
+}
+
+export interface OrderDoc extends Models.Document {
+    user_id: string;
+    status: string;
+    total: number;
+}
+
+export interface OrderItemDoc extends Models.Document {
+    order_id: string;
+    menu_id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image_url: string;
+}
+
+export interface CreateOrderParams {
+    userId: string;
+    items: {
+        id: string;
+        name: string;
+        price: number;
+        image_url: string;
+        quantity: number;
+    }[];
+    total: number;
 }
