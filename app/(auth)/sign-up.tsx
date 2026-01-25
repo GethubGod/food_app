@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { Link, router } from "expo-router";
 import CustomInput from "@/components/CustomInput";
 import CustomButton from "@/components/CustomButton";
-import {createUser} from "@/lib/appwrite";
+import {createUser} from "@/lib/api";
 import useAuthStore from "@/store/auth.store";
+import useFetch from "@/lib/useFetch";
 
 const SignUp = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);

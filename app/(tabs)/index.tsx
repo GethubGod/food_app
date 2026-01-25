@@ -5,6 +5,8 @@ import "../globals.css";
 import cn from 'clsx';
 import CartButton from "@/components/CartButton";
 import {router, type Href} from "expo-router";
+import {getCategories, getMenu} from "@/lib/api";
+import useFetch from "@/lib/useFetch";
 
 export default function Index() {
     const cardActions: Array<{ title: string; route?: Href }> = [

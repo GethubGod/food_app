@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import { Link, router } from "expo-router";
 import CustomInput from "@/components/CustomInput";
 import CustomButton from "@/components/CustomButton";
-import {getCurrentUser, signIn} from "@/lib/appwrite";
+import {getCurrentUser, signIn} from "@/lib/api";
 import * as Sentry from "@sentry/react-native";
 import useAuthStore from "@/store/auth.store";
+import useFetch from "@/lib/useFetch";
 
 const SignIn = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);

@@ -8,7 +8,7 @@ import cn from "clsx";
 import CustomButton from "@/components/CustomButton";
 import CartItem from "@/components/cartItem";
 import useAuthStore from "@/store/auth.store";
-import { createOrder } from "@/lib/appwrite";
+import { createOrder } from "@/lib/api";
 
 const PaymentInfoStripe = ({ label,  value,  labelStyle,  valueStyle, }: PaymentInfoStripeProps) => (
     <View className="flex-between flex-row my-1">

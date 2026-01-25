@@ -1,7 +1,7 @@
 import {View, Text, Alert, TouchableOpacity, Image} from 'react-native'
 import React from 'react'
 import useAuthStore from '@/store/auth.store';
-import { signOut } from '@/lib/appwrite';
+import { signOut } from '@/lib/api';
 import { router } from 'expo-router';
 import { images } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
