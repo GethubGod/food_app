@@ -2,7 +2,6 @@ import CustomButton from "@/components/CustomButton";
 import CustomHeader from "@/components/CustomHeader";
 import CustomInput from "@/components/CustomInput";
 import { createMenuItem, getCategories } from "@/lib/api";
-import useAppwrite from "@/lib/useFetch";
 import React, { useState } from "react";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,7 +19,6 @@ const EditItems = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: categories } = useAppwrite({ fn: getCategories });
 
   const submit = async () => {
     if (

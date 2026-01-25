@@ -42,7 +42,7 @@ const Cart = () => {
         setIsSubmitting(true);
         try {
             await createOrder({
-                userId: user.$id,
+                userId: user.id,
                 items: items.map((item) => ({
                     id: item.id,
                     name: item.name,

@@ -1,6 +1,10 @@
-import { Models } from "react-native-appwrite";
+export interface BaseRow {
+    id: string;
+    created_at?: string;
+    updated_at?: string;
+}
 
-export interface MenuItem extends Models.Document {
+export interface MenuItem extends BaseRow {
     name: string;
     price: number;
     image_url: string;
@@ -9,14 +13,15 @@ export interface MenuItem extends Models.Document {
     protein: number;
     rating: number;
     type: string;
+    category_id?: string;
 }
 
-export interface Category extends Models.Document {
+export interface Category extends BaseRow {
     name: string;
     description: string;
 }
 
-export interface User extends Models.Document {
+export interface User extends BaseRow {
     name: string;
     email: string;
     avatar: string;
@@ -120,13 +125,14 @@ export interface CreateMenuItemParams {
     categoryId: string;
 }
 
-export interface OrderDoc extends Models.Document {
+export interface OrderDoc extends BaseRow {
     user_id: string;
     status: string;
     total: number;
+    order_items?: OrderItemDoc[];
 }
 
-export interface OrderItemDoc extends Models.Document {
+export interface OrderItemDoc extends BaseRow {
     order_id: string;
     menu_id: string;
     name: string;

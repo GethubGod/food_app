@@ -93,21 +93,34 @@ export const getMenu = async ({ category, query }: GetMenuParams) => {
     return data;
 };
 
-// export const createMenuItem = async ({
-//     name, description, image_url, price, rating, calories, protein, categoryId,
-// }: CreateMenuItemParams) => {
-//     const { data, error } = await supabase
-//         .from('menu')
-//         .insert({
-//             name, description, image_url, price, rating, calories, protein,
-//             category_id: categoryId,
-//         })
-//         .select()
-//         .single();
+export const createMenuItem = async ({
+    name,
+    description,
+    image_url,
+    price,
+    rating,
+    calories,
+    protein,
+    categoryId,
+}: CreateMenuItemParams) => {
+    const { data, error } = await supabase
+        .from("menu")
+        .insert({
+            name,
+            description,
+            image_url,
+            price,
+            rating,
+            calories,
+            protein,
+            category_id: categoryId,
+        })
+        .select()
+        .single();
 
-//     if (error) throw new Error(error.message);
-//     return data;
-// };
+    if (error) throw new Error(error.message);
+    return data;
+};
 
 export const createOrder = async ({ userId, items, total }: CreateOrderParams) => {
     // 1. Create Order

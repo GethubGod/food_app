@@ -3,7 +3,7 @@ import Filter from "@/components/Filter";
 import MenuCard from "@/components/MenuCard";
 import SearchBar from "@/components/SearchBar";
 import { getCategories, getMenu } from "@/lib/api";
-import useAppwrite from "@/lib/useFetch";
+import useFetch from "@/lib/useFetch";
 import type { Category, GetMenuParams, MenuItem } from "@/type";
 import cn from "clsx";
 import { useLocalSearchParams } from "expo-router";
@@ -19,11 +19,11 @@ const Search = () => {
   const categoryValue = typeof category === "string" ? category : "";
   const queryValue = typeof query === "string" ? query : "";
 
-  const { data, refetch, loading } = useAppwrite<MenuItem[], GetMenuParams>({
+  const { data, refetch, loading } = useFetch<MenuItem[], GetMenuParams>({
     fn: getMenu,
     params: { category: categoryValue, query: queryValue },
   });
-  const { data: categories } = useAppwrite<Category[]>({ fn: getCategories });
+  const { data: categories } = useFetch<Category[]>({ fn: getCategories });
 
   useEffect(() => {
     refetch({ category: categoryValue, query: queryValue });
@@ -46,7 +46,7 @@ const Search = () => {
             </View>
           );
         }}
-        keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item.id}
         numColumns={2}
         columnWrapperClassName="gap-7"
         contentContainerClassName="gap-7 px-5 pb-32"

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import {getCurrentUser} from "@/lib/appwrite";
+import { getCurrentUser } from "@/lib/api";
 import type { User } from "@/type";
 
 type AuthState ={

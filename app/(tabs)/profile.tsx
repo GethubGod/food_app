@@ -15,7 +15,7 @@ const Profile = () => {
     const handleSeed = async () => {
         try {
           await seed();
-          Alert.alert("Seed complete", "Your Appwrite data was refreshed.");
+          Alert.alert("Seed complete", "Your Supabase data was refreshed.");
         } catch (e: any) {
           Alert.alert("Seed failed", e.message ?? "Check console for details.");
         }
