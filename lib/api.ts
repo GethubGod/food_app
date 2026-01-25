@@ -20,7 +20,7 @@ export const signOut = async () => {
     if (error) throw new Error(error.message);
 };
 
-export const createUser = async ({ email, password, name }: CreateUserParams) => {
+export const createUser = async ({ email, password, name }: CreateUserParams): Promise<User> => {
     // 1. Sign up the user in Auth system
     const { data, error } = await supabase.auth.signUp({
         email,
@@ -34,18 +34,20 @@ export const createUser = async ({ email, password, name }: CreateUserParams) =>
     if (!data.user) throw new Error("User creation failed");
 
     // 2. Create the Public Profile in 'users' table
-    const { error: profileError } = await supabase
+    const { data: userProfile, error: profileError } = await supabase
         .from('users')
         .insert({
             id: data.user.id, // links to auth
             email: email,
             name: name,
             avatar: `https://ui-avatars.com/api/?name=${name}&background=random` // Simple avatar generator
-        });
+        })
+        .select()
+        .single();
 
     if (profileError) throw new Error(profileError.message);
 
-    return data.user;
+    return userProfile;
 };
 
 export const getCurrentUser = async (): Promise<User> => {
@@ -75,22 +77,22 @@ export const getCategories = async (): Promise<Category[]> => {
     return data || [];
 };
 
-export const getMenu = async ({ category, query }: GetMenuParams) => {
+export const getMenu = async (params?: GetMenuParams): Promise<MenuItem[]> => {
     let dbQuery = supabase.from('menu').select('*, categories(*)');
 
     // Filter by Category ID (assuming 'category' param is an ID string)
-    if (category) {
-       dbQuery = dbQuery.eq('category_id', category);
+    if (params?.category) {
+       dbQuery = dbQuery.eq('category_id', params.category);
     }
 
     // Search by Name
-    if (query) {
-       dbQuery = dbQuery.ilike('name', `%${query}%`);
+    if (params?.query) {
+       dbQuery = dbQuery.ilike('name', `%${params.query}%`);
     }
 
     const { data, error } = await dbQuery;
     if (error) throw new Error(error.message);
-    return data;
+    return data || [];
 };
 
 export const createMenuItem = async ({

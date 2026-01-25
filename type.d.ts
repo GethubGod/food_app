@@ -110,8 +110,8 @@ export interface SignInParams {
 }
 
 export interface GetMenuParams {
-    category: string;
-    query: string;
+    category?: string;
+    query?: string;
 }
 
 export interface CreateMenuItemParams {
