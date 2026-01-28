@@ -1,9 +1,11 @@
 import {SplashScreen, Stack} from "expo-router";
 import './globals.css';
 import { useFonts } from 'expo-font';
-import { useEffect } from "react";
 import * as Sentry from '@sentry/react-native';
 import useAuthStore from "@/store/auth.store";
+import {testConnection} from "@/lib/test-connection";  // Keep this import
+import {useEffect} from 'react';
+
 
 Sentry.init({
   dsn: 'https://6b0508df2af6e8c73be40b10abef0067@o4510732473860096.ingest.us.sentry.io/4510732498370561',
@@ -40,11 +42,20 @@ export default Sentry.wrap(function RootLayout() {
     if(fontsLoaded) SplashScreen.hideAsync();
   }, [fontsLoaded, error]);
 
+  
+  // test connection to supabase
+  useEffect(() => {
+    testConnection();
+  }, []);
+
   useEffect(() => {
     fetchAuthenticatedUser()
   }, []);
 
+  
   if(!fontsLoaded || isLoading) return null;
 
   return <Stack screenOptions={{ headerShown: false}}/>;
+
+  
 });
