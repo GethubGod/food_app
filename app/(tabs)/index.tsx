@@ -8,7 +8,7 @@ import {router, type Href} from "expo-router";
 
 export default function Index() {
     const cardActions: { title: string; route?: Href }[] = [
-        { title: "ITEMS", route: "/search" },
+        { title: "ITEMS", route: "/(tabs)/items" as Href },
         { title: "ORDERS", route: "/orders" },
         { title: "FULFILLMENT" },
         { title: "OTHER" },

@@ -152,3 +152,38 @@ export interface CreateOrderParams {
     }[];
     total: number;
 }
+
+export interface InventoryItem extends BaseRow {
+    name: string;
+    category: string;
+    image: any;
+    image_url?: string;
+    base_unit: string;
+    pack_unit: string;
+    pack_size: number;
+    par_level: number;
+    lead_time_days: number;
+    active: boolean;
+}
+
+export interface CreateInventoryItemParams {
+    name: string;
+    category: string;
+    image_url: string;
+    base_unit: string;
+    pack_unit: string;
+    pack_size: number;
+    par_level: number;
+    lead_time_days: number;
+    active: boolean;
+}
+
+export interface UpdateInventoryItemParams extends Partial<CreateInventoryItemParams> {
+    id: string;
+}
+
+export interface GetInventoryItemsParams {
+    category?: string;
+    query?: string;
+    active?: boolean;
+}

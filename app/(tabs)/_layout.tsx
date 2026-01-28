@@ -54,6 +54,13 @@ export default function TabLayout() {
             }}
             />
             <Tabs.Screen
+                name='items'
+                options={{
+                    title: 'Items',
+                    tabBarIcon: ({focused}) => <TabBarIcon title="Items" icon={images.check} focused={focused} />
+                }}
+            />
+            <Tabs.Screen
                 name='cart'
                 options={{
                     title: 'Cart',

@@ -1,8 +1,9 @@
 import { supabase } from './supabaseConfig';
-import { 
-    Category, CreateMenuItemParams, CreateOrderParams, 
-    CreateUserParams, GetMenuParams, MenuItem, OrderDoc, 
-    SignInParams, User 
+import {
+    Category, CreateMenuItemParams, CreateOrderParams,
+    CreateUserParams, GetMenuParams, MenuItem, OrderDoc,
+    SignInParams, User, InventoryItem, CreateInventoryItemParams,
+    UpdateInventoryItemParams, GetInventoryItemsParams
 } from "@/type";
 
 // --- AUTHENTICATION ---
@@ -166,4 +167,99 @@ export const getOrdersByUser = async ({ userId }: { userId: string }): Promise<O
 
     if (error) throw new Error(error.message);
     return data;
+};
+
+// --- INVENTORY ITEMS ---
+
+export const getInventoryItems = async (params?: GetInventoryItemsParams): Promise<InventoryItem[]> => {
+    let dbQuery = supabase.from('inventory_items').select('*');
+
+    // Filter by category
+    if (params?.category) {
+        dbQuery = dbQuery.eq('category', params.category);
+    }
+
+    // Search by name
+    if (params?.query) {
+        dbQuery = dbQuery.ilike('name', `%${params.query}%`);
+    }
+
+    // Filter by active status
+    if (params?.active !== undefined) {
+        dbQuery = dbQuery.eq('active', params.active);
+    }
+
+    // Order by name
+    dbQuery = dbQuery.order('name', { ascending: true });
+
+    const { data, error } = await dbQuery;
+    if (error) throw new Error(error.message);
+    return data || [];
+};
+
+export const getInventoryItemById = async (id: string): Promise<InventoryItem> => {
+    const { data, error } = await supabase
+        .from('inventory_items')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) throw new Error(error.message);
+    return data;
+};
+
+export const createInventoryItem = async (params: CreateInventoryItemParams): Promise<InventoryItem> => {
+    const { data, error } = await supabase
+        .from('inventory_items')
+        .insert({
+            name: params.name,
+            category: params.category,
+            image_url: params.image_url,
+            base_unit: params.base_unit,
+            pack_unit: params.pack_unit,
+            pack_size: params.pack_size,
+            par_level: params.par_level,
+            lead_time_days: params.lead_time_days,
+            active: params.active,
+        })
+        .select()
+        .single();
+
+    if (error) throw new Error(error.message);
+    return data;
+};
+
+export const updateInventoryItem = async (params: UpdateInventoryItemParams): Promise<InventoryItem> => {
+    const { id, ...updateData } = params;
+
+    const { data, error } = await supabase
+        .from('inventory_items')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+
+    if (error) throw new Error(error.message);
+    return data;
+};
+
+export const deleteInventoryItem = async (id: string): Promise<void> => {
+    const { error } = await supabase
+        .from('inventory_items')
+        .delete()
+        .eq('id', id);
+
+    if (error) throw new Error(error.message);
+};
+
+export const getInventoryCategories = async (): Promise<string[]> => {
+    const { data, error } = await supabase
+        .from('inventory_items')
+        .select('category');
+
+    if (error) throw new Error(error.message);
+
+    // Extract unique categories
+    const categories = [...new Set(data?.map(item => item.category) || [])];
+    return categories.filter(Boolean);
 };
