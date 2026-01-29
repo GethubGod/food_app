@@ -1,180 +1,70 @@
+import {ImageSourcePropType} from 'react-native';
+
+//base types
 export interface BaseRow {
     id: string;
     created_at?: string;
-    updated_at?: string;
 }
 
-export interface MenuItem extends BaseRow {
-    name: string;
-    price: number;
-    image_url: string;
-    description: string;
-    calories: number;
-    protein: number;
-    rating: number;
-    type: string;
-    category_id?: string;
-}
-
-export interface Category extends BaseRow {
-    name: string;
-    description: string;
-}
-
+//database table types
 export interface User extends BaseRow {
     name: string;
     email: string;
-    avatar: string;
-}
-
-export interface CartCustomization {
-    id: string;
-    name: string;
-    price: number;
-    type: string;
-}
-
-export interface CartItemType {
-    id: string; // menu item id
-    name: string;
-    price: number;
-    image_url: string;
-    quantity: number;
-    customizations?: CartCustomization[];
-}
-
-export interface CartStore {
-    items: CartItemType[];
-    addItem: (item: Omit<CartItemType, "quantity">) => void;
-    removeItem: (id: string, customizations: CartCustomization[]) => void;
-    increaseQty: (id: string, customizations: CartCustomization[]) => void;
-    decreaseQty: (id: string, customizations: CartCustomization[]) => void;
-    clearCart: () => void;
-    getTotalItems: () => number;
-    getTotalPrice: () => number;
-}
-
-export interface TabBarIconProps {
-    focused: boolean;
-    icon: ImageSourcePropType;
-    title: string;
-}
-
-export interface PaymentInfoStripeProps {
-    label: string;
-    value: string;
-    labelStyle?: string;
-    valueStyle?: string;
-}
-
-export interface CustomButtonProps {
-    onPress?: () => void;
-    title?: string;
-    style?: string;
-    leftIcon?: React.ReactNode;
-    textStyle?: string;
-    isLoading?: boolean;
-}
-
-export interface CustomHeaderProps {
-    title?: string;
-}
-
-export interface CustomInputProps {
-    placeholder?: string;
-    value?: string;
-    onChangeText?: (text: string) => void;
-    label: string;
-    secureTextEntry?: boolean;
-    keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
-    containerClassName?: string;
-    labelClassName?: string;
-    inputClassName?: string;
-}
-
-export interface ProfileFieldProps {
-    label: string;
-    value: string;
-    icon: ImageSourcePropType;
-}
-
-export interface CreateUserParams {
-    email: string;
-    password: string;
-    name: string;
-}
-
-export interface SignInParams {
-    email: string;
-    password: string;
-}
-
-export interface GetMenuParams {
-    category?: string;
-    query?: string;
-}
-
-export interface CreateMenuItemParams {
-    name: string;
-    description: string;
-    image_url: string;
-    price: number;
-    rating: number;
-    calories: number;
-    protein: number;
-    categoryId: string;
-}
-
-export interface OrderDoc extends BaseRow {
-    user_id: string;
-    status: string;
-    total: number;
-    order_items?: OrderItemDoc[];
-}
-
-export interface OrderItemDoc extends BaseRow {
-    order_id: string;
-    menu_id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image_url: string;
-}
-
-export interface CreateOrderParams {
-    userId: string;
-    items: {
-        id: string;
-        name: string;
-        price: number;
-        image_url: string;
-        quantity: number;
-    }[];
-    total: number;
+    role: 'employee' | 'manager';
+    avatar?: string;
 }
 
 export interface InventoryItem extends BaseRow {
     name: string;
-    category: string;
-    image: any;
-    image_url?: string;
-    base_unit: string;
-    pack_unit: string;
+    category: 'fish' | 'prep' | 'dry' | 'cold' | 'frozen';  // Strict union type
+    supplier_category: 'fish_supplier' | 'main_distributor' | 'local_store';
+    base_unit: 'lb' | 'oz' | 'each';
+    pack_unit: 'case' | 'box' | 'bag';
     pack_size: number;
-    par_level: number;
-    lead_time_days: number;
+    image_url?: string;
     active: boolean;
+}
+
+export interface Order extends BaseRow {
+    order_number: number;
+    user_id: string;
+    status: 'pending' | 'processing' | 'fulfilled';
+    notes?: string;
+    filfilled_at?: string;
+    fulfilled_by?: string;
+    order_items?: OrderItem[];
+}
+
+export interface OrderItem extends BaseRow {
+    order_id: string; 
+    inventory_item_id: string;
+    quantity: number;
+    unit_type: 'case' | 'each' | 'lb';
+    checked: boolean;
+    inventory_item?: InventoryItem;
+}
+
+//api parameters types
+export interface CreateUserParams {
+    email: string;
+    password: string;
+    name: string;
+    role: 'employee' | 'manager';
+}
+
+export interface SignInParams {
+    email: string;
+    password: string;   
 }
 
 export interface CreateInventoryItemParams {
     name: string;
-    category: string;
-    image_url: string;
-    base_unit: string;
-    pack_unit: string;
-    pack_size: number;
-    par_level: number;
-    lead_time_days: number;
+    category: 'fish' | 'prep' | 'dry' | 'cold' | 'frozen';
+    supplier_category: 'fish_supplier' | 'main_distributor' | 'local_store';
+    base_unit: 'lb' | 'oz' | 'each';
+    pack_unit: 'case' | 'box' | 'bag';
+    pact_size: number;
+    image_url?: string;
     active: boolean;
 }
 
@@ -183,7 +73,109 @@ export interface UpdateInventoryItemParams extends Partial<CreateInventoryItemPa
 }
 
 export interface GetInventoryItemsParams {
-    category?: string;
+    category?: 'fish' | 'prep' | 'dry' | 'cold' | 'frozen';
     query?: string;
     active?: boolean;
+}
+
+export interface CreateOrderParams {
+    user_id: string;
+    notes?: string;
+    items: CreateOrderItemParams[];
+}
+
+export interface CreateOrderItemParams {
+    inventory_item_id: string;
+    quantity: number;
+    unit_type: 'case' | 'each' | 'lb';
+}
+
+export interface UpdateOrderParams {
+    id: string;
+    status?: 'pending' | 'processing' | 'fulfilled';
+    notes?: string;
+    fulfilled_by?: string;
+    filfilled_at?: string;
+}
+
+export interface GetOrdersParams {
+    user_id?: string;
+    status?: 'pending' | 'processing' | 'fulfilled';
+}
+
+//component props types
+export interface CustomButtonProps {
+    onPress?: () => void;
+    title?: string;
+    variant?: 'primary' | 'secondary' | 'outline';
+    style?: string;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
+    textSytle?: string;
+    isLoading?: boolean;
+    disabled?: boolean;
+}
+
+export interface CustomInputProps {
+    placeholder?: string;
+    value?: string;
+    onChangeText?: (text: string) => void;
+    label: string;
+    secureTextEntry?: boolean;
+    keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+    containerClassName?: string;
+    labelClassName?: string;
+    inputClassName?: string;
+    error?: string;
+}
+
+export interface CustomCardProps {
+    children: React.ReactNode;
+    className?: string;
+    onPress?: () => void;
+}
+
+export interface BadgeProps {
+    text: string | number;
+    variant?: 'default' | 'success' | 'warning' | 'error';
+    className?: string;
+}
+
+export interface CustomHeaderProps {
+    title?: string;
+    showBack?: boolean;
+    rightComponent?: React.ReactNode;
+}
+
+export interface TabBarIconProps {
+    focused: boolean;
+    icon: ImageSourcePropType;
+    title: string;
+}
+
+//store types (zustand)
+export interface AuthStore {
+    user: User | null;
+    session: any | null;
+    isLoading: boolean;
+
+    signIn: (params: SignInParams) => Promise<void>;
+    signUp: (params: CreateUserParams) => Promise<void>;
+    signOut: () => void;
+    fetchAuthenticatedUser: () => Promise<void>;
+}
+
+export interface CartItem {
+    inventory_item: InventoryItem;
+    quantity: number;
+    unit_type: 'case' | 'each' | 'lb';
+}
+
+export interface CartStore {
+    items: CartItem[];
+    addItem: (item: InventoryItem, quantity: number, unit_type: 'case' | 'each' | 'lb') => void;
+    removeItem: (itemId: string) => void;
+    updateQuantity: (itemId: string, quantity: number) => void;
+    clearCart: () => void;
+    getTotalItems: () => number;
 }
