@@ -1,4 +1,4 @@
-import {ImageSourcePropType} from 'react-native';
+import { ImageSourcePropType } from 'react-native';
 
 //base types
 export interface BaseRow {
@@ -30,7 +30,7 @@ export interface Order extends BaseRow {
     user_id: string;
     status: 'pending' | 'processing' | 'fulfilled';
     notes?: string;
-    filfilled_at?: string;
+    fulfilled_at?: string;
     fulfilled_by?: string;
     order_items?: OrderItem[];
 }
@@ -63,7 +63,7 @@ export interface CreateInventoryItemParams {
     supplier_category: 'fish_supplier' | 'main_distributor' | 'local_store';
     base_unit: 'lb' | 'oz' | 'each';
     pack_unit: 'case' | 'box' | 'bag';
-    pact_size: number;
+    pack_size: number;
     image_url?: string;
     active: boolean;
 }
@@ -95,7 +95,7 @@ export interface UpdateOrderParams {
     status?: 'pending' | 'processing' | 'fulfilled';
     notes?: string;
     fulfilled_by?: string;
-    filfilled_at?: string;
+    fulfilled_at?: string;
 }
 
 export interface GetOrdersParams {
@@ -111,7 +111,7 @@ export interface CustomButtonProps {
     style?: string;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
-    textSytle?: string;
+    textStyle?: string;
     isLoading?: boolean;
     disabled?: boolean;
 }
@@ -161,7 +161,7 @@ export interface AuthStore {
 
     signIn: (params: SignInParams) => Promise<void>;
     signUp: (params: CreateUserParams) => Promise<void>;
-    signOut: () => void;
+    signOut: () => Promise<void>;
     fetchAuthenticatedUser: () => Promise<void>;
 }
 

@@ -1,43 +1,109 @@
+import { supabase } from '@/lib/supabase';
+import type { AuthStore, CreateUserParams, SignInParams, User } from '@/type';
 import { create } from 'zustand';
-import { getCurrentUser } from "@/lib/api";
-import type { User } from "@/type";
 
-type AuthState ={
-    isAuthenticated: boolean;
-    user: User | null;
-    isLoading: boolean;
-
-    setIsAuthenticated: (value: boolean) => void;
-    setUser: (user: User | null) => void;
-    setLoading: (value: boolean) => void;
-
-    fetchAuthenticatedUser: () => Promise<void>;
-}
-
-const useAuthStore = create<AuthState>((set) => ({
-    isAuthenticated: false,
+const useAuthStore = create<AuthStore>((set) => ({
     user: null,
+    session: null,
     isLoading: true,
 
-    setIsAuthenticated: (value) => set({ isAuthenticated: value }),
-    setUser: (user) => set({ user }),
-    setLoading: (value) => set({isLoading: value}),
+    //sign in
+    signIn: async (params: SignInParams) => {
+        const { email, password } = params;
+        
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+    });
 
+    if (error) throw error;
+
+    // Fetch user profile from users table
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+
+    if (userError) throw userError;
+
+    set({ user: userData as User, session: data.session });
+  },
+
+    // Sign Up
+    signUp: async (params: CreateUserParams) => {
+        const { email, password, name, role } = params;
+
+        // 1. Create auth user
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+    });
+
+    if (error) throw error;
+    if (!data.user) throw new Error('User creation failed');
+
+    // 2. Create user profile in users table
+    const { error: profileError } = await supabase
+      .from('users')
+      .insert({
+        id: data.user.id,
+        email,
+        name,
+        role,
+      });
+
+    if (profileError) throw profileError;
+
+    // 3. Fetch the created user profile
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+
+    if (userError) throw userError;
+
+    set({ user: userData as User, session: data.session });
+  },
+
+    // Sign Out
+    signOut: async () => {
+        await supabase.auth.signOut();
+        set({ user: null, session: null });
+  },
+
+    // Fetch Authenticated User
     fetchAuthenticatedUser: async () => {
-        set({isLoading: true});
+        set({ isLoading: true });
 
-        try{
-            const user = await getCurrentUser();
+    try {
+      // Get current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-            if(user) set({ isAuthenticated: true, user })
-            else set({ isAuthenticated: false, user: null });
-        }catch(e){
-            console.log('fetchAuthenticatedUser error:', e);
-            set({isLoading: false, user:null, isAuthenticated: false});
-        } finally {
-            set({isLoading: false});
-        }
+        if (sessionError) throw sessionError;
+
+        if (!session) {
+            set({ user: null, session: null, isLoading: false });
+            return;
+      }
+
+        // Fetch user profile
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+        if (userError) throw userError;
+
+        set({ user: userData as User, session, isLoading: false });
+    } catch (e) {
+      console.log('fetchAuthenticatedUser error:', e);
+      set({ user: null, session: null, isLoading: false });
     }
-}))
+  },
+    
+}));
 
 export default useAuthStore;
