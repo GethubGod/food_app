@@ -3,7 +3,6 @@ import './globals.css';
 import { useFonts } from 'expo-font';
 import * as Sentry from '@sentry/react-native';
 import useAuthStore from "@/store/auth.store";
-import {testConnection} from "@/lib/test-connection";  // Keep this import
 import {useEffect} from 'react';
 
 
@@ -43,17 +42,12 @@ export default Sentry.wrap(function RootLayout() {
   }, [fontsLoaded, error]);
 
   
-  // test connection to supabase
-  useEffect(() => {
-    testConnection();
-  }, []);
-
   useEffect(() => {
     fetchAuthenticatedUser()
   }, []);
 
-  
-  if(!fontsLoaded || isLoading) return null;
+  //temporary 
+  if(!fontsLoaded) return null;
 
   return <Stack screenOptions={{ headerShown: false}}/>;
 

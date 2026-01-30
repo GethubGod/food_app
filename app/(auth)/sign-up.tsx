@@ -3,32 +3,37 @@ import React, { useState } from "react";
 import { Link, router } from "expo-router";
 import CustomInput from "@/components/CustomInput";
 import CustomButton from "@/components/CustomButton";
-import {createUser} from "@/lib/api";
 import useAuthStore from "@/store/auth.store";
-import useFetch from "@/lib/useFetch";
 
 const SignUp = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [form, setForm] = useState({name: '',email:'', password:''});
-    const { setIsAuthenticated, setUser } = useAuthStore();
+    const [form, setForm] = useState({ name: '', email: '', password: '' });
+    const { signUp } = useAuthStore();  // Use signUp from store
 
     const submit = async () => {
-        const {name, email, password} = form;
-        if(!name || !email || !password) return Alert.alert('Error', 'Please fill all fields');
+        const { name, email, password } = form;
+        if (!name || !email || !password) {
+            return Alert.alert('Error', 'Please fill all fields');
+        }
 
-        setIsSubmitting(true)
+        setIsSubmitting(true);
 
-        try{
-            const user = await createUser({ email, password, name,});
-            setUser(user);
-            setIsAuthenticated(true);
-            router.replace('/');
-        } catch(error: any) {
+        try {
+            // Call store's signUp method with role defaulted to 'employee'
+            await signUp({ 
+                email, 
+                password, 
+                name, 
+                role: 'employee'  // Default new users to employee role
+            });
+            router.replace('/');  // Will redirect based on role in index.tsx
+        } catch (error: any) {
             Alert.alert('Error', error.message);
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
+
     return (
         <View className="gap-12">
             <Text className="text-3xl font-quicksand-bold text-dark-100">
@@ -85,11 +90,12 @@ const SignUp = () => {
                 <Text className="base-regular text-gray-200">
                     Already have an account?
                 </Text>
-                <Link href="/sign-in" className="base-bold text-primary">
+                <Link href="/(auth)/sign-in" className="base-bold text-primary">
                     Login
                 </Link>
             </View>
         </View>
-    )
-}
-export default SignUp
+    );
+};
+
+export default SignUp;
