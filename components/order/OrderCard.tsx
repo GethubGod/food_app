@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
-import type { OrderWithDetails } from '@/type';
+import type { OrderWithDetails } from '@/types';
 import Badge from '@/components/ui/Badge';
 
 interface OrderCardProps {

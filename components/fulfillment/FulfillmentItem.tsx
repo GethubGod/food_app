@@ -1,7 +1,7 @@
 
 import { View, Text, Pressable } from 'react-native';
-import type { AggregatedItem } from '@/type';
-import { getCategoryInfo } from '@/type';
+import type { AggregatedItem } from '@/types';
+import { getCategoryInfo } from '@/types';
 
 interface FulfillmentItemProps {
     item: AggregatedItem;

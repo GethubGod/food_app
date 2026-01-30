@@ -46,6 +46,12 @@ export default function EmployeeLayout() {
                     ),
                 }}
             />
+
+            <Tabs.Screen name="draft" options={{href: null}} />
+            <Tabs.Screen name="confirmation" options={{href: null}} />
+            <Tabs.Screen name="order-details" options={{href: null}} />
+            <Tabs.Screen name="browse" options={{href: null}} />
+            <Tabs.Screen name="quick-order" options={{href: null}} />
         </Tabs>
     );
 }

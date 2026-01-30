@@ -1,6 +1,6 @@
 import {View, Text, TextInput} from 'react-native'
 import React, {useState} from 'react'
-import {CustomInputProps} from "@/type";
+import {CustomInputProps} from "@/types";
 import cn from "clsx";
 
 const CustomInput = ({

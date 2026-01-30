@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import type { Order, OrderWithDetails, CreateOrderData } from '@/type';
+import type { Order, OrderWithDetails, CreateOrderData } from '@/types';
 
 interface OrdersStore {
     orders: OrderWithDetails[];

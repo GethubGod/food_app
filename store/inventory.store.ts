@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import type { InventoryItem, CategoryKey } from '@/type';
+import type { InventoryItem, CategoryKey } from '@/types';
 
 interface InventoryStore {
     items: InventoryItem[];

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import type { Location, LocationStore } from '@/type';
+import type { Location, LocationStore } from '@/types';
 
 export const useLocationStore = create<LocationStore>((set) => ({
     locations: [],

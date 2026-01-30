@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
-import type { DraftItem as DraftItemType } from '@/type';
+import type { DraftItem as DraftItemType } from '@/types';
 
 interface DraftItemProps {
     item: DraftItemType;

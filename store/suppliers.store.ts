@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import type { Supplier } from '@/type';
+import type { Supplier } from '@/types';
 
 interface SuppliersStore {
     suppliers: Supplier[];

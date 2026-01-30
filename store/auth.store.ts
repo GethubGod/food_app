@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { AuthStore, CreateUserParams, SignInParams, User } from '@/type';
+import type { AuthStore, CreateUserParams, SignInParams, User } from '@/types';
 import { create } from 'zustand';
 
 const useAuthStore = create<AuthStore>((set) => ({

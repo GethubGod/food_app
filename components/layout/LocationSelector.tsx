@@ -1,6 +1,6 @@
 import { View, Text, Pressable, Modal, FlatList } from 'react-native';
 import { useState } from 'react';
-import type { Location } from '@/type';
+import type { Location } from '@/types';
 
 interface LocationSelectorProps {
     locations: Location[];

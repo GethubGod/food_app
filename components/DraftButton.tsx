@@ -3,7 +3,7 @@
 
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { images } from "@/constants";
-import { useDraftStore } from "@/store/draft.store";  // You'll create this
+import { useDraftStore } from "@/store/draft.store"; 
 import { router } from "expo-router";
 
 const DraftButton = () => {

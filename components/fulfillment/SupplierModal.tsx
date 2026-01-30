@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Modal, Linking } from 'react-native';
-import type { Supplier } from '@/type';
+import type { Supplier } from '@/types';
 
 interface SupplierModalProps {
     supplier: Supplier | null;

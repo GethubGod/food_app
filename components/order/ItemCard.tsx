@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
-import type { InventoryItem } from '@/type';
+import type { InventoryItem } from '@/types';
 
 interface ItemCardProps {
     item: InventoryItem;
